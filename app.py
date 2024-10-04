@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import numpy as np
+import time
 
 # タイトルの設定
 st.title('StreamlitによるApp')
@@ -263,4 +265,72 @@ fig.update_layout(
                           showarrow=False)])
 
 st.plotly_chart(fig)
+
+
+# レッスン８：キャッシュを使用したパフォーマンス最適化
+st.header('レッスン８：キャッシュを使用したパフォーマンス最適化')
+
+
+def generate_large_dataset():
+    # 大きなデータセットを生成（約10秒かかる）
+    data = pd.DataFrame(np.random.randn(1000000, 5),
+                        columns=['A', 'B', 'C', 'D', 'E'])
+    return data
+
+
+@st.cache_data
+def load_data_cached():
+    return generate_large_dataset()
+
+
+def load_data_uncached():
+    return generate_large_dataset()
+
+
+st.subheader("キャッシュなしの場合")
+start_time = time.time()
+data_uncached = load_data_uncached()
+end_time = time.time()
+st.write(f"データ読み込み時間：{end_time - start_time: .2f} 秒")
+st.write(data_uncached.head())
+
+
+st.subheader("キャッシュありの場合")
+start_time = time.time()
+data_cached = load_data_cached()
+end_time = time.time()
+st.write(f"データ読み込み時間：{end_time - start_time: .2f} 秒")
+st.write(data_cached.head())
+
+st.write("キャッシュありの場合、２回目以降の読み込みは非常に高速になります・")
+
+
+# 大規模データセットの処理
+@st.cache_resource
+def load_large_dataset():
+    return pd.DataFrame(
+        np.random.randn(1000000, 5),
+        columns=['A', 'B', 'C', 'D', 'E']
+    )
+
+
+st.subheader("大規模データセットの処理")
+start_time = time.time()
+large_data = load_large_dataset()
+end_time = time.time()
+st.write(f"データ読み込み時間：{end_time - start_time: .2f} 秒")
+st.write(f"データセットの形状：{large_data.shape}")
+st.write(large_data.head())
+
+
+# キャッシュの無効化
+@st.cache_data(ttl=10)
+def get_current_time():
+    return pd.Timestamp.now()
+
+
+st.subheader("キャッシュの無効化")
+st.write("現在時刻（10秒ごとに更新）:")
+st.write(get_current_time())
+
 
