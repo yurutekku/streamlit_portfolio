@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 import time
+import openpyxl
 
 # タイトルの設定
 st.title('StreamlitによるApp')
@@ -568,3 +569,83 @@ for col in columns_to_plot:
         )
     )
 st.plotly_chart(fig4)
+
+
+# レッスン１２：ファイルアップローダー
+st.header('レッスン１２：ファイルアップローダー')
+
+# CSVファイルのアップロードと表示
+st.subheader('CSVファイルのアップロードと表示')
+
+uploaded_csv = st.file_uploader(
+    "CSVファイルをアップロードしてください",
+    type="csv",
+    key="csv_uploader")
+
+if uploaded_csv is not None:
+    df_csv = pd.read_csv(uploaded_csv)
+    st.write("アップロードされたCSVファイルの内容：")
+    st.write(df_csv)
+
+    st.write("データの基本統計：")
+    st.write(df_csv.describe())
+
+    # 数値列の選択
+    numeric_columns = df_csv.select_dtypes(
+        include=[np.number]).columns.tolist()
+    selected_column = st.selectbox(
+        "グラフ化する列を選択してください",
+        numeric_columns,
+        key="csv_column_select")
+
+    # ヒストグラムの作成
+    fig = go.Figure(data=[go.Histogram(x=df_csv[selected_column])])
+    fig.update_layout(title=f"{selected_column}のヒストグラム")
+    st.plotly_chart(fig)
+
+
+# Excelファイルのアップロードと表示
+st.subheader('Excelファイルのアップロードと表示')
+
+uploaded_excel = st.file_uploader(
+    "Excelファイルをアップロードしてください",
+    type=["xlsx", "xls"],
+    key="excel_uploader")
+
+if uploaded_excel is not None:
+    excel_file = openpyxl.load_workbook(uploaded_excel)
+    sheet_names = excel_file.sheetnames
+
+    st.write("シート名：")
+    st.write(sheet_names)
+
+    selected_sheet = st.radio(
+        "分析するシートを選択してください",
+        sheet_names,
+        key="sheet_selector")
+
+    df_excel = pd.read_excel(
+        uploaded_excel,
+        sheet_name=selected_sheet)
+    st.write(f"選択されシート '{selected_sheet}' の内容：")
+    st.write(df_excel)
+
+    # 列の選択
+    selected_columns = st.multiselect(
+        "表示する列を選択してください",
+        df_excel.columns.tolist(),
+        key="excel_column_select")
+
+    if selected_columns:
+        st.write("選択された列のデータ：")
+        st.write(df_excel[selected_columns])
+
+        # 散布図の作成（２つの列が選択された場合）
+        if len(selected_columns) == 2:
+            fig = go.Figure(data=go.Scatter(x=df_excel[selected_columns[0]],
+                                            y=df_excel[selected_columns[1]],
+                                            mode='markers'))
+            fig.update_layout(
+                title=f"{selected_columns[0]} vs {selected_columns[1]} の散布図")
+            st.plotly_chart(fig)
+
