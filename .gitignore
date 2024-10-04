@@ -163,8 +163,8 @@ cython_debug/
 
 
 #Streamlit secrets
-./streamlit/secrets.toml
+.streamlit/secrets.toml
 
-#Virtual environment
+#Virtual Environment
 myenv/
 
