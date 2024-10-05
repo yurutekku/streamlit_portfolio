@@ -649,3 +649,111 @@ if uploaded_excel is not None:
                 title=f"{selected_columns[0]} vs {selected_columns[1]} の散布図")
             st.plotly_chart(fig)
 
+
+# レッスン１３：カラムとコンテナによるレイアウト
+st.header("レッスン１３：カラムとコンテナによるレイアウト")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.subheader("列１")
+    st.write("ここは１列目です。")
+    st.button("ボタン１", key="button1")
+
+with col2:
+    st.subheader("列２")
+    st.write("ここは２列目です。")
+    st.checkbox("チェックボックス", key="checkbox1")
+
+with col3:
+    st.subheader("列３")
+    st.write("ここは３列目です。")
+    st.radio("ラジオボタン", ["選択肢１", "選択肢２", "選択肢３"], key="radio1")
+
+
+# 異なる幅のカラム
+st.subheader("異なる幅のカラム")
+
+col_left, col_right = st.columns([2, 1])
+
+with col_left:
+    st.subheader("左側（幅広）")
+    chart_data = pd.DataFrame(
+                    np.random.randn(20, 3),
+                    columns=["A", "B", "C"])
+    selected_column = st.selectbox(
+                     "データを選択",
+                     ["A", "B", "C"],
+                     key="data_select")
+    st.line_chart(chart_data[selected_column])
+
+with col_right:
+    st.subheader("右側（幅狭）")
+    st.write(f"選択されたデータ： {selected_column}")
+    st.write(f"平均値： {chart_data[selected_column].mean():.2f}")
+    st.write(f"最大値： {chart_data[selected_column].max():.2f}")
+    st.write(f"最小値： {chart_data[selected_column].min():.2f}")
+
+# コンテナの使用
+st.subheader("コンテナの使用")
+
+with st.container():
+    st.subheader("データ分析セクション")
+    st.write("このコンテナ内にデータ分析関連の要素をグループ化します")
+
+    data_container = st.container()
+
+    data = pd.DataFrame({
+        '名前': ['Alice', 'Bob', 'Charlie', 'David'],
+        '年齢': [25, 30, 35, 40],
+        '都市': ['東京', '大阪', '名古屋', '福岡'],
+    })
+
+    data_container.dataframe(data)
+
+    analysis_type = st.radio(
+        "分析タイプ",
+        ["平均年齢", "都市別人数"],
+        key="analysis_type")
+
+    if analysis_type == "平均年齢":
+        data_container.write(f"平均年齢：{data['年齢'].mean(): .1f}歳")
+    else:
+        data_container.write(data['都市'].value_counts())
+
+
+# ネストされたレイアウト
+st.subheader("ネストされたレイアウト")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.write("左側のカラム")
+    with st.container():
+        st.write("左側のコンテナ")
+        slider_value = st.slider(
+             "値の選択",
+             0,
+             100,
+             50,
+             key="nested_slider")
+
+with col2:
+    st.write("右側のカラム")
+    with st.container():
+        st.write("右側の上部コンテナ")
+        option = st.selectbox(
+            "オプションを選択",
+            ["オプション１",
+             "オプション２",
+             "オプション３"],
+            key="nested_select")
+
+    with st.container():
+        st.write("右側の下部コンテナ")
+        if st.button(
+                    "クリックしてください",
+                    key="nested_button"):
+            st.write("ボタンがクリックされました！")
+
+
