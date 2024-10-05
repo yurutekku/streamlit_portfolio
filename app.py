@@ -839,3 +839,8 @@ with st.expander("カスタム分析"):
 
         if st.checkbox("詳細統計を表示"):
             st.write(product_data['売上'].describe())
+
+
+# レッスン１７：Streamlit Cloud アプリケーションのメンテナンスと管理
+st.header("レッスン１７：Streamlit Cloud アプリケーションのメンテナンスと管理")
+st.write("Streamlit Cloud にアプリ公開後に修正した内容が自動的に反映されるかを確認します（本文が表示されたら成功！！）")
