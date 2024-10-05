@@ -839,4 +839,3 @@ with st.expander("カスタム分析"):
 
         if st.checkbox("詳細統計を表示"):
             st.write(product_data['売上'].describe())
-
